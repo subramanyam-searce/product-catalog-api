@@ -1,5 +1,3 @@
-CREATE DATABASE "product-catalog";
-
 CREATE TABLE category (
   category_id int,
   name varchar,
@@ -37,3 +35,5 @@ CREATE TABLE product (
      PRIMARY KEY(ref, product_id),
      FOREIGN KEY(product_id) REFERENCES product(product_id)
    );
+
+   GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "service-pc-api"; 
