@@ -23,7 +23,6 @@ var Routes []typedefs.Route = []typedefs.Route{
 	{Path: "/inventory/add", Handler: handlers_inventory.AddInventory, Method: "POST"},
 	{Path: "/inventory", Handler: handlers_inventory.GetInventory, Method: "GET"},
 	{Path: "/inventory/delete/{id:[0-9]+}", Handler: handlers_inventory.DeleteInventory, Method: "DELETE"},
-	{Path: "/inventory/update/{id:[0-9]+}", Handler: handlers_inventory.UpdateInventory, Method: "PUT"},
 
 	{Path: "/cart/create", Handler: handlers_cart.CreateCart, Method: "POST"},
 	{Path: "/addtocart", Handler: handlers_cart.AddToCart, Method: "POST"},

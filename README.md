@@ -96,9 +96,126 @@ Updates a product in the database referenced by **${id}**
 ```http
 PUT /product/update/${id}
 ```
+#### Request Body
+
+JSON:
 
 - `name` (string, optional): The name of the product.
 - `specification` (JSON, optional): The Specifications of the product.
 - `sku` (string, optional): Stock Keeping Unit number of the product.
 - `category_id` (int, optional): The product's category ID. This needs to be present in the Category Table.
 - `price` (float, optional): The product's price
+
+#### Add Category
+Adds a new category to the database
+
+```http
+POST /category/add
+```
+
+#### Request Body
+
+JSON:
+
+- `category_id` (int, required): Unique ID for the Category
+- `name` (string, required): The name of the category
+
+#### Get Categories
+Get an array of all Categories
+
+```http
+GET /categories
+```
+
+#### Delete Category
+Deletes a category from the database
+
+```http
+DELETE /category/delete/${id}
+```
+
+#### Update Category
+Update the category field referenced by **${id}**
+
+```http
+PUT /category/update/${id}
+```
+
+#### Add Inventory Item
+Add/Update the inventory.
+
+```http
+POST /inventory/add
+```
+#### Request Body
+
+JSON:
+
+- `product_id` (int, required): Product ID to add/update in inventory
+- `quantity` (int, required): The quantity to add/update
+
+#### Get Inventory
+View the current stock in inventory
+
+```http
+GET /inventory
+```
+
+#### Delete Inventory Item
+Delete an item from the inventory
+
+```http
+POST /inventory/delete/${id}
+```
+
+#### Create a cart
+Creates a new reference to a cart and returns it, which shall be used in all further cart operations.
+
+```http
+POST /cart/create
+```
+
+#### Add items to cart
+Add new items or increase existing quantity.
+
+```http
+POST /addtocart
+```
+#### Query Parameters:
+
+| Parameter | Type     | Description                |
+| :-------- | :------- | :------------------------- |
+| `ref` | `string` | **Required**. Cart Reference ID |
+| `product_id` | `int` | **Required**. Product ID |
+| `quantity` | `int` | **Required**. Quantity of the product to add |
+
+#### Get Cart
+Get the cart referenced by ```ref```
+
+```http
+GET /cart/get
+```
+
+#### Query Parameters:
+
+| Parameter | Type     | Description                |
+| :-------- | :------- | :------------------------- |
+| `ref` | `string` | **Required**. Cart Reference ID |
+
+#### RemoveFromCart
+Remove a Product ID from a cart referenced by 
+
+```http
+DELETE /removeitemfromcart
+```
+
+| Parameter | Type     | Description                |
+| :-------- | :------- | :------------------------- |
+| `ref` | `string` | **Required**. Cart Reference ID |
+| `product_id` | `int` | **Required**. Product ID |
+
+
+## Acknowledgements
+
+ - [Database Design](https://app.diagrams.net/#G1YuY3PY67Qg_d9O4dic71VcaWJdOD_obM)
+
