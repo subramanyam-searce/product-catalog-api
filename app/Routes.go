@@ -28,4 +28,5 @@ var Routes []typedefs.Route = []typedefs.Route{
 	{Path: "/cart/create", Handler: handlers_cart.CreateCart, Method: "POST"},
 	{Path: "/addtocart", Handler: handlers_cart.AddToCart, Method: "POST"},
 	{Path: "/cart/get", Handler: handlers_cart.GetCart, Method: "GET"},
+	{Path: "/removeitemfromcart", Handler: handlers_cart.RemoveItemFromCart, Method: "DELETE"},
 }

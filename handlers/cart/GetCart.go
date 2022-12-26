@@ -34,6 +34,7 @@ func GetCart(w http.ResponseWriter, r *http.Request) {
 		cart.Items = append(cart.Items, new_cart_item)
 	}
 
+	cart.EvaluateCartValue()
 	helpers.SendResponse(cart, w)
 
 }
