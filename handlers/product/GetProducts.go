@@ -19,7 +19,7 @@ func GetProducts(w http.ResponseWriter, r *http.Request) {
 	page_no, err := strconv.Atoi(page_no_str)
 	helpers.HandleError("strconvError", err)
 
-	n := 5
+	n := 20
 	start_index_no := ((page_no - 1) * n)
 
 	rows, err := helpers.RunQuery("SELECT * FROM product")

@@ -11,6 +11,7 @@ func RunQuery(query string, v ...any) (*sql.Rows, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer stmt.Close()
 
 	rows, err := stmt.Query(v...)
 	return rows, err
