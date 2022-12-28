@@ -18,9 +18,9 @@ sudo apt-get -y install postgresql
 Install the following packages using go get
 
 ```bash
-github.com/gorilla/mux
-github.com/google/uuid
-github.com/lib/pq
+go get github.com/gorilla/mux
+go get github.com/google/uuid
+go get github.com/lib/pq
 ```
 ## Environment Setup
 
