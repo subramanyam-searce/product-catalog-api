@@ -6,6 +6,7 @@ DELETE FROM category;
 
 INSERT INTO category VALUES(1, 'Clothes');
 INSERT INTO category VALUES(2, 'Electronics');
+INSERT INTO category VALUES(3, 'Perfumes');
 
 INSERT INTO product VALUES(1, 'Hoodie', '{"color": "black", "gender": "male"}', 65544, 1, 10.99);
 INSERT INTO product VALUES(2, 'TWS', '{"color": "white", "ANC": "true"}', 65546, 2, 14.99);
