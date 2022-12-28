@@ -17,7 +17,7 @@ CREATE TABLE product (
  
  CREATE TABLE inventory (
    product_id int,
-   quantity int,
+   quantity int CHECK(quantity >= 0),
    PRIMARY KEY(product_id),
    FOREIGN KEY (product_id) REFERENCES product(product_id)
   );

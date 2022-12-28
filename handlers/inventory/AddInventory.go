@@ -22,12 +22,18 @@ func AddInventory(w http.ResponseWriter, r *http.Request) {
 
 		_, err = helpers.RunQuery("UPDATE inventory SET quantity=$1 WHERE product_id=$2", existing_quantity+inventory_item.Quantity, inventory_item.ProductID)
 		helpers.HandleError("runQueryError", err)
+
+		if err != nil {
+			helpers.SendResponse(map[string]string{"message": err.Error()}, w)
+			return
+		}
 	} else {
 		query := "INSERT INTO inventory VALUES($1, $2)"
 		_, err = helpers.RunQuery(query, inventory_item.ProductID, inventory_item.Quantity)
 		helpers.HandleError("runQueryError", err)
 		if err != nil {
 			helpers.SendResponse(map[string]string{"message": err.Error()}, w)
+			return
 		}
 	}
 

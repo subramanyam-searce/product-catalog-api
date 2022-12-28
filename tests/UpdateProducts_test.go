@@ -34,6 +34,11 @@ func TestUpdateProducts(t *testing.T) {
 	product_id = 100
 	CheckUpdateEndpoint(product_id, update_json_req_body_map, "Product not found", t)
 
+	//updating only one field
+	product_id = 1
+	update_json_req_body_map = map[string]any{"name": "Hoodie"}
+	CheckUpdateEndpoint(product_id, update_json_req_body_map, "Update done successfully", t)
+
 }
 
 func CheckUpdateEndpoint(product_id int, update_json_req_body_map map[string]any, expected_response string, t *testing.T) {
