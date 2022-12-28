@@ -28,7 +28,7 @@ func GetProducts(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		newProduct := typedefs.Product{}
 		spec_json := ""
-		rows.Scan(&newProduct.Product_ID, &newProduct.Name, &spec_json, &newProduct.SKU, &newProduct.CategoryID, newProduct.Price)
+		rows.Scan(&newProduct.Product_ID, &newProduct.Name, &spec_json, &newProduct.SKU, &newProduct.CategoryID, &newProduct.Price)
 		json.Unmarshal([]byte(spec_json), &newProduct.Specification)
 		products = append(products, newProduct)
 	}
