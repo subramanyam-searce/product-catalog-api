@@ -175,11 +175,11 @@ Creates a new reference to a cart and returns it, which shall be used in all fur
 POST /cart/create
 ```
 
-#### Add items to cart
-Add new items or increase existing quantity.
+#### Add item to cart
+Add new item or increase existing quantity.
 
 ```http
-POST /addtocart
+POST /additemtocart
 ```
 #### Query Parameters:
 
@@ -188,6 +188,25 @@ POST /addtocart
 | `ref` | `string` | **Required**. Cart Reference ID |
 | `product_id` | `int` | **Required**. Product ID |
 | `quantity` | `int` | **Required**. Quantity of the product to add |
+
+#### Add items to cart
+Add new **items** or increase existing quantity.
+
+```http
+POST /additemstocart
+```
+#### Query Parameters:
+
+| Parameter | Type     | Description                |
+| :-------- | :------- | :------------------------- |
+| `ref` | `string` | **Required**. Cart Reference ID |
+
+#### Request Body
+
+Array of JSON of structure:
+
+- `product_id` (int, required): The Product ID to add to cart
+- `quantity` (int, required): Quantity of product to add.
 
 #### Get Cart
 Get the cart referenced by ```ref```
