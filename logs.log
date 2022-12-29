@@ -1,0 +1,5 @@
+2022/12/29 13:30:10 runQueryError: <nil>
+2022/12/29 13:30:10 GetProductQueryHelperError: <nil>
+2022/12/29 13:31:01 runQueryError:dial tcp 127.0.0.1:5432: connect: connection refused
+2022/12/29 13:31:01 GetProductQueryHelperError:dial tcp 127.0.0.1:5432: connect: connection refused
+2022/12/29 13:34:27 runQueryError:pq: update or delete on table "category" violates foreign key constraint "product_category_id_fkey" on table "product"
