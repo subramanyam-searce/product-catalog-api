@@ -225,6 +225,9 @@ DELETE /removeitemfromcart
 | :-------- | :------- | :------------------------- |
 | `ref` | `string` | **Required**. Cart Reference ID |
 | `product_id` | `int` | **Required**. Product ID |
+| `quantity` | `int` | **Optional**. Quantity to remove |
+
+If quantity is unspecified, All quantity of the product referenced by **product_id** is removed.
 
 
 ## Acknowledgements
