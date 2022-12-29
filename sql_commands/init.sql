@@ -31,7 +31,7 @@ CREATE TABLE product (
    CREATE TABLE cart_item (
      ref varchar,
      product_id int,
-     quantity int,
+     quantity int CHECK(quantity >= 0),
      PRIMARY KEY(ref, product_id),
      FOREIGN KEY(product_id) REFERENCES product(product_id)
    );

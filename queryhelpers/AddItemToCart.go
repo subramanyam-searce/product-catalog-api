@@ -17,6 +17,10 @@ func AddItemToCart(ref, quantity_str, product_id string) map[string]string {
 	quantity, err := strconv.Atoi(quantity_str)
 	helpers.HandleError("strconvError:", err)
 
+	if quantity < 0 {
+		return map[string]string{"message": "Quantity cannot be Negative"}
+	}
+
 	rows, err := helpers.RunQuery("SELECT * FROM cart_reference WHERE ref=$1;", ref)
 	helpers.HandleError("runQueryError:", err)
 
@@ -36,11 +40,18 @@ func AddItemToCart(ref, quantity_str, product_id string) map[string]string {
 	helpers.HandleError("rowsScanError", err)
 
 	if inventory_item.Quantity-quantity < 0 {
-		return map[string]string{"message": "Inventory Quantity is less than the required quantity: " + fmt.Sprint(inventory_item.Quantity)}
+		return map[string]string{"message": "The Required Quantity is more than the Available Inventory Quantity: " + fmt.Sprint(inventory_item.Quantity)}
 	}
 
-	_, err = helpers.RunQuery("UPDATE inventory SET quantity=$1 WHERE product_id=$2", inventory_item.Quantity-quantity, product_id)
-	helpers.HandleError("runQueryError:", err)
+	if inventory_item.Quantity-quantity > 0 {
+		_, err = helpers.RunQuery("UPDATE inventory SET quantity=$1 WHERE product_id=$2", inventory_item.Quantity-quantity, product_id)
+		helpers.HandleError("runQueryError:", err)
+	}
+
+	if inventory_item.Quantity-quantity == 0 {
+		_, err = helpers.RunQuery("DELETE FROM inventory WHERE product_id=$1", product_id)
+		helpers.HandleError("runQueryError:", err)
+	}
 
 	rows, err = helpers.RunQuery("SELECT quantity FROM cart_item WHERE ref=$1 AND product_id=$2", ref, product_id)
 	helpers.HandleError("runQueryError:", err)
