@@ -141,19 +141,6 @@ Update the category field referenced by **${id}**
 PUT /category/update/${id}
 ```
 
-#### Add Inventory Item
-Add/Update the inventory.
-
-```http
-POST /inventory/add
-```
-#### Request Body
-
-JSON:
-
-- `product_id` (int, required): Product ID to add/update in inventory
-- `quantity` (int, required): The quantity to add/update
-
 #### Get Inventory
 View the current stock in inventory
 
@@ -161,12 +148,18 @@ View the current stock in inventory
 GET /inventory
 ```
 
-#### Delete Inventory Item
-Delete an item from the inventory
+#### Update Inventory Item
+Add/Update the inventory.
 
 ```http
-POST /inventory/delete/${id}
+POST /inventory/update
 ```
+#### Request Body
+
+JSON:
+
+- `product_id` (int, required): Product ID to update/update in inventory
+- `quantity` (int, required): The quantity to update/update
 
 #### Create a cart
 Creates a new reference to a cart and returns it, which shall be used in all further cart operations.
@@ -212,7 +205,7 @@ Array of JSON of structure:
 Get the cart referenced by ```ref```
 
 ```http
-GET /cart/get
+GET /cart
 ```
 
 #### Query Parameters:
