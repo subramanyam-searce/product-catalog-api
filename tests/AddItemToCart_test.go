@@ -29,7 +29,7 @@ func TestAddToCart(t *testing.T) {
 		{"ref": "4d4d8297-7663-451d-b79e-49a545728552", "product_id": 3, "quantity": 3, "expected_response": "Item was added to the cart"},
 
 		//quantity more than inventory stock
-		{"ref": "4d4d8297-7663-451d-b79e-49a545728552", "product_id": 3, "quantity": 200, "expected_response": "Inventory Quantity is less than the required quantity: 96"},
+		{"ref": "4d4d8297-7663-451d-b79e-49a545728552", "product_id": 3, "quantity": 200, "expected_response": "The Required Quantity is more than the Available Inventory Quantity: 96"},
 
 		//Invalid Cart reference
 		{"ref": "4abcd", "product_id": 3, "quantity": 1, "expected_response": "Invalid cart_reference"},

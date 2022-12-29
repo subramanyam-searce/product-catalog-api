@@ -28,7 +28,7 @@ func RemoveItemFromCartViaAPI(ref string, product_id int, t *testing.T) map[stri
 func TestRemoveItemFromCart(t *testing.T) {
 	test_cases := []map[string]any{
 		//Valid ref and valid product id
-		{"ref": "4d4d8297-7663-451d-b79e-49a545728552", "product_id": 3, "expected_response": "Cart item deleted successfully"},
+		{"ref": "4d4d8297-7663-451d-b79e-49a545728552", "product_id": 3, "expected_response": "All quantity of this product was removed from your cart"},
 
 		//invalid ref
 		{"ref": "abcd", "product_id": 3, "expected_response": "Invalid cart_reference"},
