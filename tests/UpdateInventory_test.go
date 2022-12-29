@@ -9,7 +9,7 @@ import (
 	"github.com/subramanyam-searce/product-catalog-go/helpers"
 )
 
-func AddInventoryViaAPI(product_id int, quantity int) map[string]string {
+func UpdateInventoryViaAPI(product_id int, quantity int) map[string]string {
 	inventory_item := map[string]int{
 		"product_id": product_id,
 		"quantity":   quantity,
@@ -19,7 +19,7 @@ func AddInventoryViaAPI(product_id int, quantity int) map[string]string {
 
 	request_body := bytes.NewBuffer(json_product)
 
-	res, err := http.Post(URL+"/inventory/add", "application/json", request_body)
+	res, err := http.Post(URL+"/inventory/update", "application/json", request_body)
 	helpers.HandleError("httpPostRequestError", err)
 
 	var json_response map[string]string
@@ -28,7 +28,7 @@ func AddInventoryViaAPI(product_id int, quantity int) map[string]string {
 	return json_response
 }
 
-func TestAddInventory(t *testing.T) {
+func TestUpdateInventory(t *testing.T) {
 	test_cases := []map[string]any{
 		{"product_id": 1, "quantity": 10, "expected_response": "Inventory Items added successfully"},                                                                          //Valid Product ID
 		{"product_id": 100, "quantity": 10, "expected_response": "pq: insert or update on table \"inventory\" violates foreign key constraint \"inventory_product_id_fkey\""}, //Invalid Product ID
@@ -37,7 +37,7 @@ func TestAddInventory(t *testing.T) {
 	}
 
 	for _, v := range test_cases {
-		response := AddInventoryViaAPI(v["product_id"].(int), v["quantity"].(int))
+		response := UpdateInventoryViaAPI(v["product_id"].(int), v["quantity"].(int))
 
 		if response["message"] != v["expected_response"] {
 			t.Errorf("Expected: %v, Got: %v", v["expected_response"], response["message"])

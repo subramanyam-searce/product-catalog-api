@@ -20,13 +20,12 @@ var Routes []typedefs.Route = []typedefs.Route{
 	{Path: "/category/delete/{id:[0-9]+}", Handler: handlers_category.DeleteCategory, Method: "DELETE"},
 	{Path: "/category/update/{id:[0-9]+}", Handler: handlers_category.UpdateCategory, Method: "PUT"},
 
-	{Path: "/inventory/add", Handler: handlers_inventory.AddInventory, Method: "POST"},
+	{Path: "/inventory/update", Handler: handlers_inventory.UpdateInventory, Method: "POST"},
 	{Path: "/inventory", Handler: handlers_inventory.GetInventory, Method: "GET"},
-	{Path: "/inventory/delete/{id:[0-9]+}", Handler: handlers_inventory.DeleteInventory, Method: "DELETE"},
 
 	{Path: "/cart/create", Handler: handlers_cart.CreateCart, Method: "POST"},
 	{Path: "/additemtocart", Handler: handlers_cart.AddToCart, Method: "POST"},
 	{Path: "/additemstocart", Handler: handlers_cart.AddItemsToCart, Method: "POST"},
-	{Path: "/cart/get", Handler: handlers_cart.GetCart, Method: "GET"},
+	{Path: "/cart", Handler: handlers_cart.GetCart, Method: "GET"},
 	{Path: "/removeitemfromcart", Handler: handlers_cart.RemoveItemFromCart, Method: "DELETE"},
 }

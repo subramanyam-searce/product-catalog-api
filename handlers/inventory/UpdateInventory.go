@@ -8,7 +8,7 @@ import (
 	"github.com/subramanyam-searce/product-catalog-go/typedefs"
 )
 
-func AddInventory(w http.ResponseWriter, r *http.Request) {
+func UpdateInventory(w http.ResponseWriter, r *http.Request) {
 	inventory_item := typedefs.Inventory{}
 	json.NewDecoder(r.Body).Decode(&inventory_item)
 
@@ -26,6 +26,16 @@ func AddInventory(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			helpers.SendResponse(map[string]string{"message": err.Error()}, w)
 			return
+		}
+
+		if existing_quantity+inventory_item.Quantity == 0 {
+			_, err = helpers.RunQuery("DELETE FROM inventory WHERE product_id=$1", inventory_item.ProductID)
+			helpers.HandleError("runQueryError", err)
+
+			if err != nil {
+				helpers.SendResponse(map[string]string{"message": err.Error()}, w)
+				return
+			}
 		}
 	} else {
 		query := "INSERT INTO inventory VALUES($1, $2)"

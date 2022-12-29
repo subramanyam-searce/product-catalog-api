@@ -9,7 +9,7 @@ import (
 )
 
 func GetCartViaAPI(ref string, t *testing.T) any {
-	response, err := http.Get(URL + "/cart/get?ref=" + ref)
+	response, err := http.Get(URL + "/cart?ref=" + ref)
 	helpers.HandleTestError("httpGetError", err, t)
 
 	var response_json any

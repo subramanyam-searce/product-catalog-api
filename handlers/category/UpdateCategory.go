@@ -18,6 +18,7 @@ func UpdateCategory(w http.ResponseWriter, r *http.Request) {
 
 	category, err := queryhelpers.GetCategory(id)
 	helpers.HandleError("getCategoryError", err)
+
 	if category == nil {
 		helpers.SendResponse(map[string]string{"message": "Category Not Found"}, w)
 		return
@@ -30,7 +31,6 @@ func UpdateCategory(w http.ResponseWriter, r *http.Request) {
 		} else {
 			err = queryhelpers.UpdateTableField("category", fmt.Sprintf("WHERE category_id=%v", id), k, fmt.Sprintf("%v", v))
 			helpers.HandleError("updateTableFieldError", err)
-			break
 		}
 	}
 
