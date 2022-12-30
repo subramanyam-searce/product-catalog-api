@@ -42,5 +42,5 @@ var AddItemToCart []validators.FieldConstraint = []validators.FieldConstraint{
 
 var RemoveItemFromCart []validators.FieldConstraint = []validators.FieldConstraint{
 	{FieldName: "product_id", DataType: "float64", IsRequired: true},
-	{FieldName: "quantity", DataType: "float64"},
+	{FieldName: "quantity", DataType: "float64", IsRequired: true},
 }
