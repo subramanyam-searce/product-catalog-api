@@ -10,7 +10,7 @@ import (
 func main() {
 	db := helpers.ConnectToDB()
 
-	sqlString, err := os.ReadFile("sql_commands/testing_state.sql")
+	sqlString, err := os.ReadFile("db/sql_commands/testing_state.sql")
 	helpers.HandleError("readFileError", err)
 	if err != nil {
 		fmt.Println("Failed to restore DB")

@@ -37,7 +37,7 @@ func TestAddProduct(t *testing.T) {
 	product := typedefs.Product{
 		Product_ID: 294,
 		Name:       "Shorts",
-		Specification: map[string]string{
+		Specification: map[string]any{
 			"color": "Brown",
 			"size":  "40",
 		},
