@@ -23,7 +23,7 @@ type JSONResponse struct {
 }
 
 func init() {
-	connection_string := "user=service-pc-api host=localhost password=pcapi sslmode=disable dbname=product-catalog"
+	connection_string := os.Getenv("CONNECTION_STRING")
 	var err error
 	db, err = sql.Open("postgres", connection_string)
 	if err != nil {
@@ -88,6 +88,7 @@ func SendResponse(v any, w http.ResponseWriter) {
 }
 
 func SendJSONResponse(message string, w http.ResponseWriter) {
+	w.Header().Add("Content-Type", "application/json")
 	SendResponse(JSONResponse{Message: message}, w)
 }
 
