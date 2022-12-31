@@ -5,11 +5,16 @@ import (
 	"net/http"
 
 	"github.com/subramanyam-searce/product-catalog-go/constants/field_constraints"
+	"github.com/subramanyam-searce/product-catalog-go/constants/responses"
 	"github.com/subramanyam-searce/product-catalog-go/db/services"
 	"github.com/subramanyam-searce/product-catalog-go/handlers/validators"
 	"github.com/subramanyam-searce/product-catalog-go/helpers"
 	"github.com/subramanyam-searce/product-catalog-go/typedefs"
 )
+
+func Home(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode(responses.ServerStarted)
+}
 
 func GetInventory(w http.ResponseWriter, r *http.Request) {
 	inventory, err := services.GetInventory()

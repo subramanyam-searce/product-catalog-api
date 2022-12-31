@@ -6,6 +6,7 @@ import (
 )
 
 var Routes []typedefs.Route = []typedefs.Route{
+	{Path: "/", Handler: handlers.Home, Method: "GET"},
 	{Path: "/product", Handler: handlers.AddProduct, Method: "POST"},
 	{Path: "/products", Handler: handlers.GetProducts, Method: "GET"},
 	{Path: "/product/{id:[0-9]+}", Handler: handlers.GetProduct, Method: "GET"},

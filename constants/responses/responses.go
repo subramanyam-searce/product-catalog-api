@@ -33,3 +33,5 @@ var ItemAddedToCart string = "Item was added to the cart Sucessfully"
 var ProductNotInCart string = "Product is not present in your Cart"
 var CartQuantityLessThanRequiredRemoval string = "Cart quantity is less than the amount you are trying to remove"
 var CartItemsRemovedSuccessfully string = "Cart Item(s) were removed Successfully"
+
+var ServerStarted string = "Server running on PORT 8080"
