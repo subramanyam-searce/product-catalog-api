@@ -12,13 +12,13 @@ type Product struct {
 	Specification map[string]any `json:"specification"`
 	SKU           string         `json:"sku"`
 	CategoryID    int            `json:"category_id"`
-	Price         float32        `json:"price"`
+	Price         float64        `json:"price"`
 }
 
 type ShortProduct struct {
 	Product_ID int     `json:"product_id"`
 	Name       string  `json:"name"`
-	Price      float32 `json:"price"`
+	Price      float64 `json:"price"`
 }
 
 type Category struct {

@@ -23,4 +23,5 @@ var GetCartItemQuantity string = "SELECT quantity FROM cart_item WHERE ref=$1 AN
 var UpdateCartItemQuantity string = "UPDATE cart_item SET quantity=$1 WHERE ref=$2 AND product_id=$3"
 var InsertCartItem string = "INSERT INTO cart_item VALUES($1, $2, $3);"
 var DeleteCartItem string = "DELETE FROM cart_item WHERE ref=$1 AND product_id=$2"
+var DeleteCartItemsWithProductID string = "DELETE FROM cart_item WHERE product_id=$1"
 var UpsertInventoryForCartItemRemoval string = "INSERT INTO inventory VALUES($1, $2) ON CONFLICT ON CONSTRAINT inventory_pkey DO UPDATE SET quantity=(SELECT quantity FROM inventory WHERE product_id=$1)+$2"

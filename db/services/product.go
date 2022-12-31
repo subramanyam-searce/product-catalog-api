@@ -79,9 +79,18 @@ func DeleteProduct(product_id int) string {
 	product, err := GetProduct(product_id)
 	helpers.HandleError("queryHelperGetProductError", err)
 
+	_, err = helpers.RunQuery(queries.DeleteInventoryItem, product_id)
+	if err != nil {
+		return err.Error()
+	}
+
+	_, err = helpers.RunQuery(queries.DeleteCartItemsWithProductID, product_id)
+	if err != nil {
+		return err.Error()
+	}
+
 	if product != nil {
 		_, err := helpers.RunQuery(queries.DeleteProduct, product_id)
-		helpers.HandleError("runQueryError:", err)
 
 		if err == nil {
 			return responses.ProductSuccessfullyDeleted
@@ -110,7 +119,7 @@ func AddProduct(product typedefs.Product) string {
 	_, err = helpers.RunQuery(queries.InsertProduct, product.Product_ID,
 		product.Name, spec_json_str, product.SKU, product.CategoryID, product.Price)
 	if err != nil {
-		return err.Error()
+		return responses.InvalidCategoryIDForProductFKConstraint
 	}
 
 	return responses.ProductAddedSuccessfully
@@ -126,6 +135,11 @@ func updateProductTableField(product_id int, fieldName string, val string) error
 func UpdateProduct(product_id int, to_update map[string]any) string {
 	if len(to_update) == 0 {
 		return responses.EmptyInputJson
+	}
+
+	_, ok := to_update["product_id"]
+	if ok {
+		return responses.ProductIDCannotBeUpdated
 	}
 
 	product, err := GetProduct(product_id)
