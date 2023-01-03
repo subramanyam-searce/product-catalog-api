@@ -25,7 +25,7 @@ func GetPositiveFloatFromConsole(message string) (float64, error) {
 		input_float, err = strconv.ParseFloat(input_string, 64)
 
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println(EnterValidFloat)
 			fmt.Println()
 			continue
 		}
@@ -48,6 +48,11 @@ func FormatPrintStruct(v any) {
 
 	fmt.Println(Divider)
 	for _, v := range s.Fields() {
+
+		if v.Kind().String() == "slice" {
+			continue
+		}
+
 		fmt.Printf("%v: %v\n", LeftFormat(v.Name()), s.Field(v.Name()).Value())
 	}
 	fmt.Println(Divider)

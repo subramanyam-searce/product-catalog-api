@@ -2,6 +2,7 @@ package services
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/subramanyam-searce/product-catalog-go/constants/queries"
@@ -14,6 +15,10 @@ func GetProduct(id int) (*typedefs.Product, error) {
 	var product *typedefs.Product = nil
 	var err error
 
+	if id <= 0 {
+		return nil, errors.New(responses.ProductIDNotPositive)
+	}
+
 	rows, err := helpers.RunQuery(queries.GetProduct, id)
 	if err != nil {
 		return nil, err
@@ -24,18 +29,29 @@ func GetProduct(id int) (*typedefs.Product, error) {
 	if rows.Next() {
 		product = &typedefs.Product{}
 		err = rows.Scan(&product.Product_ID, &product.Name, &spec_byte_slice, &product.SKU, &product.CategoryID, &product.Price)
-		helpers.HandleError("rowsScanError", err)
+		if err != nil {
+			return nil, err
+		}	
 
 		err := json.Unmarshal(spec_byte_slice, &product.Specification)
-		helpers.HandleError("jsonUnmarshalError", err)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	helpers.HandleError("rowsScanError", err)
-	return product, err
+	return product, nil
 }
 
 func GetProducts(page_no int, items_per_page int) ([]typedefs.ShortProduct, error) {
 	products := []typedefs.Product{}
+
+	if page_no <= 0 {
+		return nil, errors.New(responses.InvalidPageNo)
+	}
+
+	if items_per_page <= 0 {
+		return nil, errors.New(responses.InvalidItemsPerPage)
+	}
 
 	rows, err := helpers.RunQuery(queries.GetAllProducts)
 	if err != nil {
@@ -78,6 +94,9 @@ func DeleteProduct(product_id int) string {
 	var err error
 	product, err := GetProduct(product_id)
 	helpers.HandleError("queryHelperGetProductError", err)
+	if err != nil {
+		return err.Error()
+	}
 
 	_, err = helpers.RunQuery(queries.DeleteInventoryItem, product_id)
 	if err != nil {
@@ -105,6 +124,17 @@ func DeleteProduct(product_id int) string {
 func AddProduct(product typedefs.Product) string {
 	existing_product, err := GetProduct(product.Product_ID)
 	helpers.HandleError("getProductError", err)
+	if err != nil {
+		return err.Error()
+	}
+
+	if product.Price <= 0 {
+		return responses.PriceNotPositive
+	}
+
+	if product.CategoryID <= 0 {
+		return responses.CategoryIDNotPositive
+	}
 
 	if existing_product != nil {
 		return responses.ProductAlreadyExists
@@ -137,9 +167,8 @@ func UpdateProduct(product_id int, to_update map[string]any) string {
 		return responses.EmptyInputJson
 	}
 
-	_, ok := to_update["product_id"]
-	if ok {
-		return responses.ProductIDCannotBeUpdated
+	if to_update["price"] != nil && to_update["price"].(float64) < 0 {
+		return responses.PriceNotPositive
 	}
 
 	product, err := GetProduct(product_id)

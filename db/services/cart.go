@@ -60,7 +60,7 @@ func GetCart(ref string) (*typedefs.Cart, error) {
 func AddItemToCart(ref string, product_id int, quantity int) (string, string, bool) {
 	var err error
 	var isNewCart bool
-	fmt.Println(ref)
+	
 	if ref == "" {
 		ref, err = CreateCart()
 		isNewCart = true

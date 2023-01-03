@@ -61,7 +61,7 @@ func DeleteCategory(w http.ResponseWriter, r *http.Request) {
 
 func UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	var err error
-	var input_json map[string]any
+	var input_json map[string]string
 	id := helpers.ParseMuxVarToInt(r, "id")
 
 	request_body, err := validators.ValidateRequestBody(r.Body, field_constraints.UpdateCategory)
@@ -74,7 +74,7 @@ func UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(request_body, &input_json)
 	helpers.HandleError("decodingError", err)
 
-	response := services.UpdateCategory(id, input_json)
+	response := services.UpdateCategory(id, input_json["name"])
 
 	helpers.SendJSONResponse(response, w)
 }

@@ -12,27 +12,37 @@ import (
 	"testing"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/subramanyam-searce/product-catalog-go/constants/responses"
 )
 
-var db *sql.DB
+var DB *sql.DB
 
 type JSONResponse struct {
 	Message string `json:"message"`
 }
 
-func init() {
-	connection_string := os.Getenv("CONNECTION_STRING")
-	var err error
-	db, err = sql.Open("postgres", connection_string)
+func EstablishDBConnection(connection_string string) *sql.DB {
+	database, err := sql.Open("postgres", connection_string)
 	if err != nil {
 		fmt.Println("sqlOpenError:", err)
 	}
+
+	return database
+}
+
+func init() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		panic(responses.ErrorLoadingEnvFile + err.Error())
+	}
+	connection_string := os.Getenv("CONNECTION_STRING")
+	DB = EstablishDBConnection(connection_string)
 }
 
 func ConnectToDB() *sql.DB {
-	return db
+	return DB
 }
 
 func HandleError(errorString string, err error) {
@@ -69,9 +79,9 @@ func ParseMuxVarToInt(r *http.Request, v string) int {
 }
 
 func RunQuery(query string, v ...any) (*sql.Rows, error) {
-	db := ConnectToDB()
+	DB := ConnectToDB()
 	var err error
-	stmt, err := db.Prepare(query)
+	stmt, err := DB.Prepare(query)
 	if err != nil {
 		return nil, err
 	}

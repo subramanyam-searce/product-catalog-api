@@ -32,6 +32,10 @@ func GetCategories() (*[]typedefs.Category, error) {
 func GetCategory(category_id int) (*typedefs.Category, error) {
 	var category *typedefs.Category
 
+	if category_id <= 0 {
+		return nil, errors.New(responses.CategoryIDNegative)
+	}
+
 	rows, err := helpers.RunQuery(queries.GetCategory, category_id)
 	if err != nil {
 		return nil, err
@@ -47,6 +51,10 @@ func GetCategory(category_id int) (*typedefs.Category, error) {
 }
 
 func DeleteCategory(category_id int) string {
+
+	if category_id <= 0 {
+		return responses.CategoryIDNegative
+	}
 
 	category, err := GetCategory(category_id)
 	helpers.HandleError("getCategoryError", err)
@@ -71,6 +79,13 @@ func AddCategory(category typedefs.Category) string {
 
 	existing_category, err := GetCategory(category.CategoryID)
 	helpers.HandleError("getCategoryError", err)
+	if category.CategoryID <= 0 {
+		return responses.CategoryIDNegative
+	}
+
+	if len(category.Name) < 3 {
+		return responses.CategoryNameLengthError
+	}
 
 	if existing_category != nil {
 		return responses.CategoryAlreadyExist
@@ -92,10 +107,7 @@ func updateCategoryTableField(category_id int, fieldName string, val string) err
 	return err
 }
 
-func UpdateCategory(category_id int, to_update map[string]any) string {
-	if len(to_update) == 0 {
-		return responses.EmptyInputJson
-	}
+func UpdateCategory(category_id int, name string) string {
 
 	category, err := GetCategory(category_id)
 	helpers.HandleError("getCategoryError", err)
@@ -107,15 +119,14 @@ func UpdateCategory(category_id int, to_update map[string]any) string {
 		return responses.InvalidCategoryID
 	}
 
-	for k, v := range to_update {
-		if k == "category_id" {
-			return responses.CategoryIDCannotBeUpdated
-		}
-		err = updateCategoryTableField(category_id, k, fmt.Sprint(v))
-		helpers.HandleError("updateTableFieldError", err)
-		if err != nil {
-			return err.Error()
-		}
+	if len(name) < 3 {
+		return responses.CategoryNameLengthError
+	}
+
+	err = updateCategoryTableField(category_id, "name", name)
+	helpers.HandleError("updateTableFieldError", err)
+	if err != nil {
+		return err.Error()
 	}
 
 	return responses.CategoryUpdatedSuccessfully
