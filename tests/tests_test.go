@@ -1,11 +1,11 @@
 package tests
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"testing"
 
-	"github.com/joho/godotenv"
 	"github.com/subramanyam-searce/product-catalog-go/constants/responses"
 	"github.com/subramanyam-searce/product-catalog-go/db/services"
 	"github.com/subramanyam-searce/product-catalog-go/helpers"
@@ -14,10 +14,6 @@ import (
 var ExpectedGot string = "%v: Expected: %v, Got: %v"
 
 func init() {
-	err := godotenv.Load("../.env")
-	if err != nil {
-		panic(responses.ErrorLoadingEnvFile + err.Error())
-	}
 	connection_string := os.Getenv("TESTING_DB_CONNECTION_STRING")
 	helpers.DB = helpers.EstablishDBConnection(connection_string)
 }
@@ -124,6 +120,10 @@ func TestUpdateProduct(t *testing.T) {
 	RestoreDBToTestingState()
 }
 
+
+
+
+
 func TestGetCategory(t *testing.T) {
 	RestoreDBToTestingState()
 
@@ -184,6 +184,169 @@ func TestUpdateCategory(t *testing.T) {
 
 	for _, v := range UpdateCategoryTestCases {
 		response := services.UpdateCategory(v.CategoryID, v.Name)
+		if response != v.Response {
+			t.Errorf(ExpectedGot, fmt.Sprint(v), v.Response, response)
+		}
+	}
+
+	RestoreDBToTestingState()
+}
+
+
+
+
+func TestGetInventory(t *testing.T) {
+	RestoreDBToTestingState()
+	_, err := services.GetInventory()
+
+	if err != nil {
+		t.Error(err)
+	}
+	RestoreDBToTestingState()
+}
+
+func TestGetInventoryItem(t *testing.T) {
+	RestoreDBToTestingState()
+
+	for _, v := range GetInventoryItemTestCases {
+		inventory_item, err := services.GetInventoryItem(v.ProductID)
+
+		if err == nil {
+			if inventory_item.Quantity != v.ExpectedQuantity {
+				t.Errorf(ExpectedGot, fmt.Sprint(v), v.ExpectedQuantity, inventory_item.Quantity)
+			}
+		}
+
+		if !IsErrorSame(err, v.Error) {
+			t.Errorf(ExpectedGot, fmt.Sprint(v), v.Error, err)
+		}
+	}
+
+	RestoreDBToTestingState()
+}
+
+func TestUpdateInventory(t *testing.T) {
+	RestoreDBToTestingState()
+
+	for _, v := range UpdateInventoryTestCases {
+		inventory_item_before_update, err := services.GetInventoryItem(v.ProductID)
+		if err != nil {
+			if !IsErrorSame(err, errors.New(v.Response)) {
+				t.Errorf(ExpectedGot, fmt.Sprint(v), v.Response, err.Error())
+				continue
+			}
+		}
+
+		response := services.UpdateInventory(v.ProductID, v.QuantityToUpdate)
+		if response != v.Response {
+			t.Errorf(ExpectedGot, fmt.Sprint(v), v.Response, response)
+			continue
+		}
+
+		if response == responses.InventoryUpdatedSuccessfully {
+			inventory_item_after_update, err := services.GetInventoryItem(v.ProductID)
+			fmt.Println(inventory_item_after_update, err)
+			if inventory_item_before_update.Quantity + v.QuantityToUpdate == 0 {
+				if !IsErrorSame(err, errors.New(responses.ProductNotInInventory)) {
+					t.Errorf(responses.QuantityNotUpdateInInventoryProperly)
+					t.Errorf(ExpectedGot, fmt.Sprint(v), v.Response, err)	
+				}
+				continue
+			}
+
+			if inventory_item_after_update.Quantity - inventory_item_before_update.Quantity != v.QuantityToUpdate {
+				t.Errorf(responses.QuantityNotUpdateInInventoryProperly)
+				t.Errorf(ExpectedGot, fmt.Sprint(v), (inventory_item_before_update.Quantity + v.QuantityToUpdate), inventory_item_after_update.Quantity)
+			}
+		}
+
+	}
+
+	RestoreDBToTestingState()
+}
+
+
+
+
+func TestGetCart(t *testing.T) {
+	RestoreDBToTestingState()
+
+	for _, v := range GetCartTestCases {
+		_, err := services.GetCart(v.CartReference)
+		if !IsErrorSame(err, v.Error) {
+			t.Errorf(ExpectedGot, fmt.Sprint(v), v.Error, err)
+		}
+	}
+
+	RestoreDBToTestingState()
+}
+
+func TestAddItemToCart(t *testing.T) {
+	RestoreDBToTestingState()
+
+	for _, v := range AddItemToCartTestCases {
+		cart_before_adding, _ := services.GetCart(v.CartReference)
+
+		ref, response, isNewCart := services.AddItemToCart(v.CartReference, v.ProductID, v.Quantity)
+		v.CartReference = ref
+
+		if response != v.Response {
+			t.Errorf(ExpectedGot, fmt.Sprint(v), v.Response, response)
+			continue
+		}
+
+		if response == responses.InvalidCart {
+			continue
+		}
+
+		if isNewCart != v.IsNewCart {
+			t.Errorf(ExpectedGot, fmt.Sprint(v), v.IsNewCart, isNewCart)
+			continue
+		}
+
+		cart_after_adding, err := services.GetCart(v.CartReference)
+		if err != nil {
+			t.Error(v, err)
+			continue
+		}
+
+		if cart_before_adding == nil {
+			for _, vc := range cart_after_adding.Items {
+				if vc.ProductID == v.ProductID {
+					if vc.Quantity != v.Quantity {
+						t.Errorf(responses.CartItemNotAddedSuccessfully)
+						t.Errorf(ExpectedGot, fmt.Sprint(v), v.Quantity, vc.Quantity)
+					}
+				}
+			}
+		} else {
+			current_quantity := 0
+			for _, vc := range cart_before_adding.Items {
+				if vc.ProductID == v.ProductID {
+					current_quantity = vc.Quantity
+				}
+			}
+
+			for _, vc := range cart_after_adding.Items {
+				if vc.ProductID == v.ProductID {
+					if response == responses.ItemAddedToCart && vc.Quantity != current_quantity + v.Quantity {
+						t.Errorf(responses.CartItemNotAddedSuccessfully)
+						t.Errorf(ExpectedGot, fmt.Sprint(v), current_quantity + v.Quantity, vc.Quantity)
+					}
+				}
+			}
+		}
+	}
+
+	RestoreDBToTestingState()
+}
+
+func TestRemoveItemFromCart(t *testing.T) {
+	RestoreDBToTestingState()
+
+	for _, v := range RemoveItemFromCartTestCases {
+		response := services.RemoveItemFromCart(v.CartReference, v.ProductID, v.Quantity)
+
 		if response != v.Response {
 			t.Errorf(ExpectedGot, fmt.Sprint(v), v.Response, response)
 		}

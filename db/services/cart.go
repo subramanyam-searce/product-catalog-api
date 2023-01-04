@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -60,6 +59,10 @@ func GetCart(ref string) (*typedefs.Cart, error) {
 func AddItemToCart(ref string, product_id int, quantity int) (string, string, bool) {
 	var err error
 	var isNewCart bool
+
+	if quantity <= 0 {
+		return ref, responses.QuantityNotPositive, isNewCart
+	}
 	
 	if ref == "" {
 		ref, err = CreateCart()
@@ -77,37 +80,9 @@ func AddItemToCart(ref string, product_id int, quantity int) (string, string, bo
 		return ref, err.Error(), isNewCart
 	}
 
-	inventory_item, err := GetInventoryItem(product_id)
-	helpers.HandleError("getInventoryItemError", err)
-
-	if err != nil {
-		return ref, err.Error(), isNewCart
-	}
-
-	if inventory_item == nil {
-		return ref, responses.ProductNotInInventory, isNewCart
-	}
-
-	if inventory_item.Quantity-quantity < 0 {
-		return ref, responses.ReqQuantityMoreThanStock + fmt.Sprint(inventory_item.Quantity), isNewCart
-	}
-
-	if inventory_item.Quantity-quantity > 0 {
-		_, err = helpers.RunQuery(queries.UpdateInventoryItem, inventory_item.Quantity-quantity, product_id)
-		helpers.HandleError("runQueryError:", err)
-
-		if err != nil {
-			return ref, err.Error(), isNewCart
-		}
-	}
-
-	if inventory_item.Quantity-quantity == 0 {
-		_, err = helpers.RunQuery(queries.DeleteInventoryItem, product_id)
-		helpers.HandleError("runQueryError:", err)
-
-		if err != nil {
-			return ref, err.Error(), isNewCart
-		}
+	response := UpdateInventory(product_id, -quantity)
+	if response != responses.InventoryUpdatedSuccessfully {
+		return ref, response, isNewCart
 	}
 
 	rows, err := helpers.RunQuery(queries.GetCartItemQuantity, ref, product_id)

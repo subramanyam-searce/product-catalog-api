@@ -33,11 +33,12 @@ func EstablishDBConnection(connection_string string) *sql.DB {
 }
 
 func init() {
-	err := godotenv.Load(".env")
+	err := godotenv.Load(responses.ProjectRoot + ".env")
 	if err != nil {
 		panic(responses.ErrorLoadingEnvFile + err.Error())
 	}
 	connection_string := os.Getenv("CONNECTION_STRING")
+
 	DB = EstablishDBConnection(connection_string)
 }
 

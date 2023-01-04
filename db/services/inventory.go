@@ -1,6 +1,8 @@
 package services
 
 import (
+	"errors"
+
 	"github.com/subramanyam-searce/product-catalog-go/constants/queries"
 	"github.com/subramanyam-searce/product-catalog-go/constants/responses"
 	"github.com/subramanyam-searce/product-catalog-go/helpers"
@@ -39,20 +41,17 @@ func GetInventoryItem(product_id int) (*typedefs.InventoryItem, error) {
 		helpers.HandleError("rowsScanError", err)
 		return &inventory_item, nil
 	} else {
-		return nil, nil
+		return nil, errors.New(responses.ProductNotInInventory)
 	}
 }
 
 func UpdateInventory(product_id int, quantity int) string {
-	product, err := GetProduct(product_id)
-	helpers.HandleError("getProductError", err)
-
-	if product == nil {
-		return responses.ProductNotFound
-	}
 
 	inventory_item, err := GetInventoryItem(product_id)
 	helpers.HandleError("getInventoryItemError", err)
+	if err != nil {
+		return err.Error()
+	}
 
 	if inventory_item != nil {
 		existing_quantity := inventory_item.Quantity

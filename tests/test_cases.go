@@ -34,6 +34,10 @@ type UpdateProductTestCase struct {
 	Response string
 }
 
+
+
+
+
 type GetCategoryTestCase struct {
 	CategoryID int
 	Error error
@@ -54,6 +58,49 @@ type UpdateCategoryTestCase struct {
 	Name string
 	Response string
 }
+
+
+
+
+
+type GetInventoryItemTestCase struct {
+	ProductID int
+	ExpectedQuantity int
+	Error error
+}
+
+type UpdateInventoryTestCase struct {
+	ProductID int
+	QuantityToUpdate int
+	Response string
+}
+
+
+
+
+type GetCartTestCase struct {
+	CartReference string
+	Error error
+}
+
+type AddItemToCartTestCase struct {
+	CartReference string
+	ProductID int
+	Quantity int
+	Response string
+	IsNewCart bool
+}
+
+type RemoveItemFromCartTestCase struct {
+	CartReference string
+	ProductID int
+	Quantity int
+	Response string
+}
+
+
+
+
 
 var GetProductTestCases []GetProductTestCase = []GetProductTestCase{
 	{ProductID: 1},
@@ -227,8 +274,11 @@ var UpdateProductTestCases []UpdateProductTestCase = []UpdateProductTestCase {
 		"price": float64(10.99),
 		"category_id": 1,
 	}, Response: responses.ProductUpdatedSuccessfully,},
-	
 }
+
+
+
+
 
 var GetCategoryTestCases []GetCategoryTestCase = []GetCategoryTestCase {
 	{CategoryID: 1},
@@ -344,4 +394,72 @@ var UpdateCategoryTestCases []UpdateCategoryTestCase = []UpdateCategoryTestCase 
 	{CategoryID: -5, Name: "Test", Response: responses.CategoryIDNegative},
 	{CategoryID: -99, Name: "Test", Response: responses.CategoryIDNegative},
 	{CategoryID: -1000, Name: "Test", Response: responses.CategoryIDNegative},
+}
+
+
+
+
+
+var GetInventoryItemTestCases []GetInventoryItemTestCase = []GetInventoryItemTestCase {
+	{ProductID: 1, ExpectedQuantity: 100},
+	{ProductID: 2, ExpectedQuantity: 50},
+	{ProductID: 3, ExpectedQuantity: 20},
+	{ProductID: 4, ExpectedQuantity: 40},
+	{ProductID: 6, ExpectedQuantity: 5},
+
+	{ProductID: 5, ExpectedQuantity: 0, Error: errors.New(responses.ProductNotInInventory)},
+	{ProductID: 1001, ExpectedQuantity: 5, Error: errors.New(responses.ProductNotInInventory)},
+	{ProductID: 103, ExpectedQuantity: 5, Error: errors.New(responses.ProductNotInInventory)},
+}
+
+var UpdateInventoryTestCases []UpdateInventoryTestCase = []UpdateInventoryTestCase {
+	{ProductID: 1, QuantityToUpdate: 10, Response: responses.InventoryUpdatedSuccessfully},
+	{ProductID: 1, QuantityToUpdate: 200, Response: responses.InventoryUpdatedSuccessfully},
+	{ProductID: 2, QuantityToUpdate: 2, Response: responses.InventoryUpdatedSuccessfully},
+	{ProductID: 3, QuantityToUpdate: -10, Response: responses.InventoryUpdatedSuccessfully},
+	{ProductID: 3, QuantityToUpdate: -10, Response: responses.InventoryUpdatedSuccessfully},
+
+	{ProductID: 3, QuantityToUpdate: -10, Response: responses.ProductNotInInventory},
+	{ProductID: 100, QuantityToUpdate: -10, Response: responses.ProductNotInInventory},
+	{ProductID: -2, QuantityToUpdate: -10, Response: responses.ProductNotInInventory},
+	{ProductID: -102, QuantityToUpdate: -10, Response: responses.ProductNotInInventory},
+
+	{ProductID: 1, QuantityToUpdate: -10000000, Response: responses.InventoryQuantityLessThanRequiredRemoval},
+	{ProductID: 2, QuantityToUpdate: -100000002, Response: responses.InventoryQuantityLessThanRequiredRemoval},
+}
+
+
+
+var GetCartTestCases []GetCartTestCase = []GetCartTestCase {
+	{CartReference: "4d4d8297-7663-451d-b79e-49a545728552"},
+
+	{CartReference: "asdasdasdasdasd", Error: errors.New(responses.InvalidCart)},
+	{CartReference: "123123", Error: errors.New(responses.InvalidCart)},
+	{CartReference: "4d4d8297-7663-451d-b79e-1111111111111", Error: errors.New(responses.InvalidCart)},
+}
+
+var AddItemToCartTestCases []AddItemToCartTestCase = []AddItemToCartTestCase {
+	{CartReference: "4d4d8297-7663-451d-b79e-49a545728552", ProductID: 1, Quantity: 10, Response: responses.ItemAddedToCart},
+	{CartReference: "4d4d8297-7663-451d-b79e-49a545728552", ProductID: 1, Quantity: 10, Response: responses.ItemAddedToCart},
+	{CartReference: "asdasd", ProductID: 1, Quantity: 10, Response: responses.InvalidCart},
+	{CartReference: "", ProductID: 1, Quantity: 10, Response: responses.ItemAddedToCart, IsNewCart: true},
+
+	{CartReference: "4d4d8297-7663-451d-b79e-49a545728552", ProductID: 1, Quantity: 1000, Response: responses.InventoryQuantityLessThanRequiredRemoval},
+	{CartReference: "4d4d8297-7663-451d-b79e-49a545728552", ProductID: -1, Quantity: 1000, Response: responses.ProductNotInInventory},
+	{CartReference: "4d4d8297-7663-451d-b79e-49a545728552", ProductID: 1, Quantity: -1, Response: responses.QuantityNotPositive},
+
+	{CartReference: "4d4d8297-7663-451d-b79e-111111111111", ProductID: 1, Quantity: 1, Response: responses.InvalidCart},
+	{CartReference: "4d4d8297-7663-451d-b79e-49a545728552", ProductID: 1, Quantity: 0, Response: responses.QuantityNotPositive},
+	{CartReference: "4d4d8297-7663-451d-b79e-49a545728552", ProductID: 10, Quantity: 0, Response: responses.QuantityNotPositive},
+	{CartReference: "4d4d8297-7663-451d-b79e-49a545728552", ProductID: 10, Quantity: 1, Response: responses.ProductNotInInventory},
+}
+
+var RemoveItemFromCartTestCases []RemoveItemFromCartTestCase = []RemoveItemFromCartTestCase {
+	{CartReference: "4d4d8297-7663-451d-b79e-49a545728552", ProductID: 3, Quantity: 5, Response: responses.CartItemsRemovedSuccessfully},
+	{CartReference: "4d4d8297-7663-451d-b79e-49a545728552", ProductID: 3, Quantity: 6, Response: responses.CartQuantityLessThanRequiredRemoval},
+	{CartReference: "4d4d8297-7663-451d-b79e-49a545728552", ProductID: 3, Quantity: 5, Response: responses.CartItemsRemovedSuccessfully},
+	{CartReference: "4d4d8297-7663-451d-b79e-111111111111", ProductID: 3, Quantity: 5, Response: responses.InvalidCart},
+	{CartReference: "", ProductID: 3, Quantity: 5, Response: responses.InvalidCart},
+	{CartReference: "4d4d8297-7663-451d-b79e-49a545728552", ProductID: 2, Quantity: 5, Response: responses.ProductNotInCart},
+	{CartReference: "4d4d8297-7663-451d-b79e-49a545728552", ProductID: -2, Quantity: 5, Response: responses.ProductNotInCart},
 }
