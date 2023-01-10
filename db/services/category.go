@@ -14,7 +14,6 @@ func GetCategories() (*[]typedefs.Category, error) {
 	categories := []typedefs.Category{}
 
 	rows, err := helpers.RunQuery(queries.GetAllCategories)
-	helpers.HandleError("runQueryError", err)
 	if err != nil {
 		return nil, err
 	}
@@ -22,7 +21,10 @@ func GetCategories() (*[]typedefs.Category, error) {
 	for rows.Next() {
 		category := typedefs.Category{}
 		err := rows.Scan(&category.CategoryID, &category.Name)
-		helpers.HandleError("rowsScanError", err)
+		if err != nil {
+			return nil, err
+		}
+
 		categories = append(categories, category)
 	}
 
@@ -57,7 +59,6 @@ func DeleteCategory(category_id int) string {
 	}
 
 	category, err := GetCategory(category_id)
-	helpers.HandleError("getCategoryError", err)
 	if err != nil {
 		return err.Error()
 	}
@@ -67,7 +68,6 @@ func DeleteCategory(category_id int) string {
 	}
 
 	_, err = helpers.RunQuery(queries.DeleteCategory, category_id)
-	helpers.HandleError("runQueryError", err)
 	if err != nil {
 		return responses.CategoryIDUsedByProduct
 	}
@@ -77,8 +77,9 @@ func DeleteCategory(category_id int) string {
 
 func AddCategory(category typedefs.Category) string {
 
-	existing_category, err := GetCategory(category.CategoryID)
-	helpers.HandleError("getCategoryError", err)
+	var err error
+	existing_category, _ := GetCategory(category.CategoryID)
+
 	if category.CategoryID <= 0 {
 		return responses.CategoryIDNegative
 	}
@@ -92,7 +93,6 @@ func AddCategory(category typedefs.Category) string {
 	}
 
 	_, err = helpers.RunQuery(queries.AddCategory, category.CategoryID, category.Name)
-	helpers.HandleError("runQueryError", err)
 	if err != nil {
 		return err.Error()
 	}
@@ -110,7 +110,6 @@ func updateCategoryTableField(category_id int, fieldName string, val string) err
 func UpdateCategory(category_id int, name string) string {
 
 	category, err := GetCategory(category_id)
-	helpers.HandleError("getCategoryError", err)
 	if err != nil {
 		return err.Error()
 	}
@@ -124,7 +123,6 @@ func UpdateCategory(category_id int, name string) string {
 	}
 
 	err = updateCategoryTableField(category_id, "name", name)
-	helpers.HandleError("updateTableFieldError", err)
 	if err != nil {
 		return err.Error()
 	}

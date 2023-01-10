@@ -15,7 +15,6 @@ func CreateCart() (string, error) {
 	ref := uuid.New().String()
 
 	_, err := helpers.RunQuery(queries.InsertCartReference, ref, time.Now())
-	helpers.HandleError("runQueryError:", err)
 	if err != nil {
 		return "", errors.New(responses.ErrorCreatingCart)
 	}
@@ -27,8 +26,6 @@ func GetCart(ref string) (*typedefs.Cart, error) {
 	cart := typedefs.Cart{}
 
 	rows, err := helpers.RunQuery(queries.GetCartReference, ref)
-	helpers.HandleError("runQueryError:", err)
-
 	if err != nil {
 		return nil, err
 	}
@@ -38,16 +35,22 @@ func GetCart(ref string) (*typedefs.Cart, error) {
 	}
 
 	err = rows.Scan(&cart.Ref, &cart.CreatedAt)
-	helpers.HandleError("rowsScanError", err)
+	if err != nil {
+		return nil, err
+	}
 
 	rows, err = helpers.RunQuery(queries.GetCartItems, ref)
-	helpers.HandleError("runQueryError:", err)
+	if err != nil {
+		return nil, err
+	}
 
 	for rows.Next() {
 		new_cart_item := typedefs.CartItem{}
 		cart_ref_id := ""
 		err = rows.Scan(&cart_ref_id, &new_cart_item.ProductID, &new_cart_item.Quantity)
-		helpers.HandleError("rowsScanError", err)
+		if err != nil {
+			return nil, err
+		}
 		cart.Items = append(cart.Items, new_cart_item)
 	}
 
@@ -67,15 +70,12 @@ func AddItemToCart(ref string, product_id int, quantity int) (string, string, bo
 	if ref == "" {
 		ref, err = CreateCart()
 		isNewCart = true
-		helpers.HandleError("createCartError", err)
 		if err != nil {
 			return ref, err.Error(), isNewCart
 		}
 	}
 
 	_, err = GetCart(ref)
-	helpers.HandleError("getCartError", err)
-
 	if err != nil {
 		return ref, err.Error(), isNewCart
 	}
@@ -86,7 +86,6 @@ func AddItemToCart(ref string, product_id int, quantity int) (string, string, bo
 	}
 
 	rows, err := helpers.RunQuery(queries.GetCartItemQuantity, ref, product_id)
-	helpers.HandleError("runQueryError:", err)
 
 	if err != nil {
 		return ref, err.Error(), isNewCart
@@ -95,18 +94,17 @@ func AddItemToCart(ref string, product_id int, quantity int) (string, string, bo
 	if rows.Next() {
 		var db_quantity int
 		err := rows.Scan(&db_quantity)
-		helpers.HandleError("rowsScanError", err)
+		if err != nil {
+			return ref, err.Error(), isNewCart
+		}
 
 		_, err = helpers.RunQuery(queries.UpdateCartItemQuantity, db_quantity+quantity, ref, product_id)
-		helpers.HandleError("runQueryError:", err)
-
 		if err != nil {
 			return ref, err.Error(), isNewCart
 		}
 
 	} else {
 		_, err = helpers.RunQuery(queries.InsertCartItem, ref, product_id, quantity)
-		helpers.HandleError("runQueryError:", err)
 
 		if err != nil {
 			return ref, err.Error(), isNewCart

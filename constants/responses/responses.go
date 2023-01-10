@@ -1,6 +1,6 @@
 package responses
 
-var ProjectRoot string = "/root/Golang/rest-api-projects/product-catalogue/"
+var ProjectRoot string = "/root/learning/Golang/rest-api-projects/product-catalogue/"
 
 var ErrorLoadingEnvFile string = "An Error occurred while loading .env file: "
 var FailedToRestoreDB string = "Failed to restore DB"
